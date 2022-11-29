@@ -6,6 +6,7 @@ from numpy import random
 from scheduler import Scheduler
 from job_repo import JobRepo
 
+
 class JobRun:
 
     m_ref_sched = None

@@ -1,6 +1,10 @@
 import time
 
+import numpy as np
 import pandas as pd
+
+from hyperparams import JOB_STATE
+
 
 class JobRepo:
     """
@@ -8,19 +12,32 @@ class JobRepo:
     """
     # Job DataFrame
     m_job_df = None
+    m_col_name = ['jid', 'mid', 'entry_t', 'start_t', 'wait_t', 'cpu_req', 'mem_req', 'exp_rt', 'state',
+                  'cpu_range_low', 'cpu_range_high', 'mem_range_low', 'mem_range_high', 'act_cpu', 'act_mem']
 
     def __init__(self):
-        m_job_df = pd.DataFrame([], columns=['jid', 'mid', 'start_t', 'cpu_req', 'mem_req', 'exp_rt', 'state', 'cpu_range', 'mem_range', 'wait_t', 'act_cpu', 'act_mem'])
+        self.m_job_df = pd.DataFrame([], columns=self.m_col_name)
+        self.m_job_df = self.m_job_df.set_index(self.m_col_name[0])
 
     def add_jobs(self, l_job_req):
         """
-        Add in new jobs.
+        Add in new jobs from job requests.
         :param l_job_req: (list) The list of job requests
         :return: (int) The number of jobs successfully added.
         """
         # TODO
-        start_t = time.time_ns()
-        pass
+        l_job = []
+        entry_t = time.time_ns()
+        for job_req in l_job_req:
+            jid, cpu_req, mem_req, exp_rt, cpu_range_high, cpu_range_low, mem_range_high, mem_range_low = job_req
+            l_job.append([jid, entry_t, np.nan, 0, cpu_req, mem_req, exp_rt, JOB_STATE.WAIT,
+                          cpu_range_low, cpu_range_high, mem_range_low, mem_range_high, np.nan, np.nan])
+        df_new_job = pd.DataFrame(l_job, columns=self.m_col_name)
+        df_new_job = df_new_job.set_index(self.m_col_name[0])
+        self.m_job_df = pd.concat([self.m_job_df, df_new_job])
+        if self.m_job_df.index.has_duplicates:
+            raise Exception('[JobRepo:add_jobs] Duplicate indexes occur!')
+        return len(df_new_job)
 
     def query_job_by_id(self, jid):
         """
