@@ -1,3 +1,4 @@
+import logging
 import time
 
 import numpy as np
@@ -39,19 +40,23 @@ class JobRepo:
             raise Exception('[JobRepo:add_jobs] Duplicate indexes occur!')
         return len(df_new_job)
 
-    def query_job_by_id(self, jid):
+    def query_job_by_id(self, jid, l_attr):
         """
         Query the profile of a job by its job ID.
         :param jid: (int) Job ID.
-        :return:
+        :param l_attr: (list of str) List of attribute names.
+        :return: (dict) The collection of desired attribute-value pairs. `None` if `jid` is not in JobRepo.
         """
-        # TODO
-        pass
+        if not jid in self.m_job_df:
+            logging.error('[JobRepo:query_job_by_id] jid: %s is not in JobRepo!' % jid)
+            return None
+        return self.m_job_df.loc[jid][l_attr].to_dict()
 
-    def query_jobs_by_ids(self, l_jid):
+    def query_jobs_by_ids(self, l_jid, l_attr):
         """
         Query the profiles of multiple jobs.
         :param l_jid: (list of int) The list of Job IDs.
+        :param l_attr: (list of str) List of attribute names.
         :return:
         """
         # TODO
