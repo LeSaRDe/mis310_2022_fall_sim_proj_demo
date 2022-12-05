@@ -61,3 +61,11 @@ class PriQ:
         """
         # TODO
         pass
+
+    def get_items_by_pri(self):
+        """
+        Output the list of items sorted by priority.
+        :return:
+        """
+        # TODO
+        pass

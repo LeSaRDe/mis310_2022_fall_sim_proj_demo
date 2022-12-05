@@ -17,6 +17,15 @@ class MachineMan:
             raise Exception('[MachineMan:set_ref_job_repo] ref_job_repo is invalid!s')
         self.m_ref_job_repo = ref_job_repo
 
+    def find_mchn_for_job(self, job_prof):
+        """
+        Find an appropriate machine to run the job described by `job_prof`.
+        :param job_prof: (tuple)
+        :return: (int or None) Machine ID or Nothing.
+        """
+        # TODO
+        #   Compare requested CPU and Memory to every machine's available CPU and Memory (the most straightforward impl)
+        pass
 
     def update_mchn_statuses(self):
         # TODO

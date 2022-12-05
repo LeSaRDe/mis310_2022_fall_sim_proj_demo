@@ -29,7 +29,7 @@ class JobRun:
             raise Exception('[JobRun:set_ref_job_repo] ref_job_repo is invalid!')
         self.m_ref_job_repo = ref_job_repo
 
-    def update_job_statuses(self):
+    def update_run_job_statuses(self):
         # TODO
         for jid in self.m_l_run_job_ids:
             # Retrieve CPU usage range
@@ -42,3 +42,17 @@ class JobRun:
             act_mem = random.uniform(low=mem_range[0], high=mem_range[1], size=1)
             # Update the status of job.
             self.m_ref_job_repo.update_job_status(jid, ['act_cpu', 'act_mem'], [act_cpu, act_mem])
+
+    def add_run_jobs(self, l_job_prof):
+        """
+        Add a list of new running jobs into JobRun.
+        :param l_job_prof: (list of tuples) The list of new running Job profiles.
+        :return: (int) The number of new running jobs added into JobRun.
+        """
+        if l_job_prof is None or len(l_job_prof) <= 0:
+            return 0
+        # Update the jobs with JobRepo
+        # TODO
+        # Add in new running Job IDs.
+        self.m_l_run_job_ids += [job_prof[0] for job_prof in l_job_prof]
+        return len(l_job_prof)
