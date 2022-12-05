@@ -127,4 +127,4 @@ class JobGen:
         self.m_ref_job_repo.add_jobs(l_job_req)
 
         # Enqueue new job requests to the job waiting queue.
-        self.m_ref_sched.add_jobs_to_wait_queue(l_job_req)
+        self.m_ref_sched.add_wait_jobs(l_job_req)

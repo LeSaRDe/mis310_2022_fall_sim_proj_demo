@@ -40,74 +40,53 @@ class JobRepo:
             raise Exception('[JobRepo:add_jobs] Duplicate indexes occur!')
         return len(df_new_job)
 
-    def query_job_by_id(self, jid, l_attr):
-        """
-        Query the profile of a job by its job ID.
-        :param jid: (int) Job ID.
-        :param l_attr: (list of str) List of attribute names.
-        :return: (dict) The collection of desired attribute-value pairs. `None` if `jid` is not in JobRepo.
-        """
-        if not jid in self.m_job_df:
-            logging.error('[JobRepo:query_job_by_id] jid: %s is not in JobRepo!' % jid)
-            return None
-        return self.m_job_df.loc[jid][l_attr].to_dict()
-
-    def query_jobs_by_ids(self, l_jid, l_attr):
+    def query_jobs_by_jids(self, l_jid, l_attr):
         """
         Query the profiles of multiple jobs.
         :param l_jid: (list of int) The list of Job IDs.
         :param l_attr: (list of str) List of attribute names.
-        :return:
+        :return: (list of dict or None) The list of data records. Each record corresponds to a jid w.r.t. l_attr.
         """
-        # TODO
-        pass
+        if l_jid is None or len(l_jid) == 0:
+            return None
+        for jid in l_jid:
+            if not jid in self.m_job_df:
+                raise Exception('[JobRepo:query_jobs_by_jids] jid: %s is not in JobRepo!' % jid)
+        if l_attr is None or len(l_attr) <= 0:
+            raise Exception('[JobRepo:query_jobs_by_jids] l_attr is invalid!')
+        return self.m_job_df.loc[l_jid][l_attr].to_dict(orient='records')
 
-    def get_job_statuses(self, jid, l_jpro_attr):
+    def update_jobs(self, l_jid, l_attr, new_vals):
         """
-        Retrieve the job profile attribute values for a given jobs.
-        :param jid: (int) Job ID.
-        :param l_jpro_attr: (list of strs) The list of job profile attributes in consideration.
-        :return: (list)
+        Update the profile of a job by giving pairs of (attribute name, attribute value).
+        :param: l_jid: (list of int) The list of Job IDs.
+        :param l_attr: (list of str) The list of job profile attributes for the update.
+        :param new_vals: (list (1-D) or list of list (>1-D)) Each element list gives the new values for the corresponding jid w.r.t. l_attr.
+        :return: (int or None) The number of jobs that have been updated.
         """
-        # TODO
-        if l_jpro_attr is None or len(l_jpro_attr) == 0:
-            raise Exception('[JobRepo:get_job_statuses] l_jpro_attr is invalid!')
-        try:
-            ret = list(self.m_job_df.loc[jid, l_jpro_attr])
-            return ret
-        except Exception as err:
-            raise Exception('[JobRepo:get_job_statuses] %s' % err)
-
-
-    def update_job_status(self, jid, l_jpro_attr, l_jpro_val):
-        """
-        Update the status of a job by giving pairs of (attribute name, attribute value).
-        :param: jid: (int) Job ID.
-        :param l_jpro_attr: (list of str) The list of job profile attributes for the update.
-        :param l_jpro_val: (list) The list of values corresponding to the attributes.
-        :return:
-        """
-        if l_jpro_attr is None or l_jpro_val is None or len(l_jpro_attr) == 0 or len(l_jpro_val) == 0 \
-                or len(l_jpro_attr) != len(l_jpro_val):
-            raise Exception('[JobRepo:update_job_status] Inputs are invalid!')
+        if l_jid is None or len(l_jid) == 0:
+            return None
+        if l_attr is None or l_attr is None or len(l_attr) == 0 or len(new_vals) == 0 or len(l_jid) != len(new_vals):
+            raise Exception('[JobRepo:update_jobs] l_attr and l_val are invalid!')
 
         try:
-            self.m_job_df.loc[jid, l_jpro_attr] = l_jpro_val
+            self.m_job_df.loc[l_jid, l_attr] = new_vals
         except Exception as err:
-            raise Exception('[JobRepo:update_job_status] %s' % err)
+            raise Exception('[JobRepo:update_jobs] %s' % err)
+        return len(l_jid)
 
-
-    def get_job_statuses_by_mid(self, mid, l_jpro_attr):
+    def query_jobs_by_mid(self, mid, l_attr):
         """
         Retrieve the profiles of jobs running on the machine `mid`.
         :param mid: (int) Machine ID.
-        :param l_jpro_attr: (list of str) Job profile attributes in consideration.
-        :return: (list of tuples) The list of job profiles.
+        :param l_attr: (list of str) Job profile attributes in consideration.
+        :return: (list of dicts or None) The list of job profiles. Each element is a record for a job w.r.t. l_attr.
         """
-        # TODO
-        df_ret = self.m_job_df[self.m_job_df['mid'] == mid][l_jpro_attr]
-        # Convert df_ret to a list of tuples
-        l_ret = []
-        return l_ret
+        if mid not in self.m_job_df['mid'].values:
+            raise Exception('[JobRepo:get_jobs_by_mid] mid %s is not in JobRepo!')
+        if l_attr is None or len(l_attr) == 0:
+            return None
+
+        return self.m_job_df[self.m_job_df['mid'] == mid][l_attr].to_dict(orient='records')
 
 
