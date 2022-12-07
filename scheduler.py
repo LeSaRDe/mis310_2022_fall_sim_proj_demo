@@ -69,6 +69,9 @@ class Scheduler:
         :param l_job_req: (list of tuples)
         :return: (int) The number of enqueued jobs.
         """
+        # Add new jobs to Job Repo.
+        self.m_ref_job_repo.add_jobs(l_job_req)
+        # Add job IDs and priorities to the job waiting queue.
         l_new_wait_job = [(job_req[0], self.compute_priority(job_req[1:])) for job_req in l_job_req]
         self.m_wait_jobs.insert_batch(l_new_wait_job)
 
